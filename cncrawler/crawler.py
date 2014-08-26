@@ -3,7 +3,7 @@
 
 import sys
 
-from pages import SantosIndexPage, SantoPage
+from pages import SantosIndexPage, SantoPage, LiturgiaIndexPage, LiturgiaPage
 
 
 SANTOS_URL = 'http://santo.cancaonova.com/'
@@ -27,9 +27,27 @@ def start_santos():
             f.write(str(page.post.content))
             f.write('\n\n')
 
+        f.close()
+
 
 def start_liturgias():
-    pass
+    index_page = LiturgiaIndexPage(LITURGIAS_URL)
+
+    with open('liturgias', 'w') as f:
+        print 'iniciando...'
+        for link in index_page.calendar.links:
+            url = str(link)
+            page = LiturgiaPage(url)
+
+            f.write('Dia: ' + link.tag.text + '\n')
+            print 'Dia: ', link.tag.text
+            for tab in page.tabs:
+                f.write(str(tab.title))
+                f.write(str(tab.content))
+                f.write('\n')
+
+            f.write('\n\n')
+        f.close()
 
 
 if __name__ == '__main__':
@@ -38,7 +56,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if sys.argv[1] == 'liturgias':
-        print 'liturgias'
+        start_liturgias()
     elif sys.argv[1] == 'santos':
         start_santos()
     else:

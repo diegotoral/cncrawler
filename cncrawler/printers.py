@@ -29,3 +29,12 @@ class CalendarLinkPrinter(GenericTagPrinter):
 
 class PostContentPrinter(GenericTagPrinter):
     pass
+
+
+class TabPanelPrinter(GenericTagPrinter):
+    pass
+
+
+class TabPrinter(GenericTagPrinter):
+    def to_str(self):
+        return self.tag.text

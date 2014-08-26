@@ -57,3 +57,30 @@ class Post(Element):
                 tag.decompose()
 
         return content_tag
+
+
+class Tab(Element):
+    def __init__(self, parent, root, printers):
+        self.root = root
+        self.parent = parent
+        self.printers = printers
+
+    @property
+    def title(self):
+        return self.printers[0](self.root)
+
+    @property
+    def content(self):
+        div_id = self.root['href']
+        return self.parent.select('div{}'.format(div_id))[0].text.encode('utf-8')
+
+    def load_content(self, html):
+        self._html = html
+
+
+class TabPanel(Element):
+    @property
+    def tabs(self):
+        ul = self.root.find('ul', id='leituraTab')
+        links_tags = ul.find_all('a')
+        return [Tab(self.root, link, [self.printers[1]]) for link in links_tags]

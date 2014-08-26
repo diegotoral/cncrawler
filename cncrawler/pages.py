@@ -3,9 +3,9 @@
 import requests
 from bs4 import BeautifulSoup
 
-from elements import Calendar, Post, Header
+from elements import Calendar, Post, Header, TabPanel
 from printers import CalendarCurrentMonthPrinter, CalendarLinkPrinter,\
-                     PostContentPrinter, HeaderTitlePrinter
+                     PostContentPrinter, HeaderTitlePrinter, TabPanelPrinter, TabPrinter
 
 
 class Page(object):
@@ -17,10 +17,7 @@ class Page(object):
         self.url = url
         self.html = BeautifulSoup(response.text)
 
-        elements_tmp = []
-        for elementClass, printers in self.elements:
-            elements_tmp.append(elementClass(self.html, printers))
-
+        elements_tmp = [klass(self.html, printers) for klass, printers in self.elements]
         self.elements = elements_tmp
 
 
@@ -47,3 +44,18 @@ class SantoPage(Page):
     @property
     def header(self):
         return self.elements[1]
+
+
+class LiturgiaIndexPage(SantosIndexPage):
+    pass
+
+
+class LiturgiaPage(Page):
+    elements = [
+        (TabPanel, [TabPanelPrinter, TabPrinter])
+    ]
+
+    @property
+    def tabs(self):
+        [tab.load_content(self.html) for tab in self.elements[0].tabs]
+        return self.elements[0].tabs
